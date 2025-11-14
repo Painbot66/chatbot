@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pro Chatbot UI</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+  body {
+    background: linear-gradient(135deg, #0d0f24, #07142c);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+  }
+  .chat-container {
+    width: 400px;
+    height: 620px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.4);
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .header {
+    padding: 20px;
+    background: rgba(255,255,255,0.09);
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .chat-box {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .bubble {
+    max-width: 75%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    line-height: 1.4;
+    font-size: 15px;
+    animation: fadeIn 0.3s ease;
+  }
+  .bot { background: #1e2a47; align-self: flex-start; border: 1px solid rgba(255,255,255,0.07);} 
+  .user { background: #4f7df5; align-self: flex-end; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px);} to { opacity: 1; transform: translateY(0);} }
+
+  .input-area {
+    display: flex;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 12px;
+    gap: 8px;
+    background: rgba(0,0,0,0.2);
+  }
+  .input-area input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+  .input-area button {
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #4f7df5;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+  }
+  .input-area button:hover { background: #3b66d6; }
+
+  .typing { font-size: 13px; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="header">Lyvra AI — Pro Chatbot</div>
+  <div class="chat-box" id="chatBox"></div>
+
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Type a message..." />
+    <button onclick="sendMsg()">Send</button>
+  </div>
+</div>
+
+<script>
+const chatBox = document.getElementById('chatBox');
+
+const KB = {
+  "hello": "Hi! How can I help you today?",
+  "hi": "Hello! What can I do for you?",
+  "what is a chatbot": "A chatbot is an AI that talks with users using text or voice, simulating human conversation.",
+  "documents": "You need ID proof, address proof, photos, and an application form.",
+  "fees": "Fees start from ₹3000 depending on your package.",
+  "schedule": "We have batches in morning, afternoon, and evening. Which do you prefer?",
+  "road signs": "Common signs: Stop, No Entry, Speed Limit, One Way, and more.",
+};
+
+function addBubble(text, type) {
+  const div = document.createElement('div');
+  div.className = `bubble ${type}`;
+  div.innerText = text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function botThinking() {
+  const div = document.createElement('div');
+  div.className = 'bubble bot typing';
+  div.id = 'typing';
+  div.innerText = 'Typing...';
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function botReply(msg) {
+  const clean = msg.toLowerCase();
+  let reply = "I didn’t understand that. Try asking about: documents, fees, schedule, or road signs.";
+
+  for (let key in KB) {
+    if (clean.includes(key)) reply = KB[key];
+  }
+
+  return reply;
+}
+
+function sendMsg() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (text === "") return;
+
+  addBubble(text, 'user');
+  input.value = "";
+
+  botThinking();
+
+  setTimeout(() => {
+    document.getElementById('typing').remove();
+    addBubble(botReply(text), 'bot');
+  }, 800);
+}
+</script>
+
+</body>
+</html>
